@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { SHOP_URL } from "@/lib/constants";
 
 const NAV_ITEMS = [
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -40,16 +42,26 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-2 text-sm font-medium text-slate-700 md:flex">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="relative rounded-full px-3 py-1.5 transition-colors hover:text-slate-900"
-            >
-              <span>{item.label}</span>
-              <span className="pointer-events-none absolute inset-x-1 -bottom-1 h-0.5 scale-x-0 rounded-full bg-orange-400 transition-transform duration-200 ease-out group-hover:scale-x-100 md:group-hover:scale-x-100" />
-            </Link>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`group relative rounded-full px-3 py-1.5 transition-colors hover:text-slate-900 ${
+                  active ? "text-slate-900" : ""
+                }`}
+              >
+                <span>{item.label}</span>
+                <span
+                  className={`pointer-events-none absolute inset-x-1 -bottom-1 h-0.5 rounded-full bg-orange-400 transition-transform duration-200 ease-out ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Desktop CTA */}
@@ -92,16 +104,20 @@ export function Navbar() {
         } overflow-hidden border-t border-slate-200 bg-white`}
       >
         <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-800">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2 hover:bg-slate-100"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-lg px-2 py-2 hover:bg-slate-100 ${active ? "bg-slate-100 text-slate-900" : ""}`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
           <a
             href={SHOP_URL}
             onClick={() => setOpen(false)}

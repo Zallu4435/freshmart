@@ -15,9 +15,8 @@ export function Hero() {
     const playSafe = () => {
       const p = v.play();
       if (p && typeof p.then === "function") {
-        p.catch((e) => {
-          console.warn("Hero: autoplay blocked or failed", e);
-        });
+        // Suppress autoplay rejection noise; we'll rely on UI state instead
+        p.catch(() => {});
       }
     };
 
@@ -36,27 +35,29 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative min-h-dvh overflow-hidden">
       {/* Background video */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-slate-950" />
 
         <video
           ref={videoRef}
-          className={`h-full w-full object-cover transition-opacity duration-500 ${
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
             isVideoLoaded ? "opacity-100" : "opacity-0"
           }`}
           autoPlay
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
+          controls={false}
           poster="/hero-poster.jpg"
-          src="/Fresh_Mart_Hero_Video_Generation.mp4"
-        />
+        >
+          <source src="/Fresh_Mart_Hero_Video_Generation.mp4" type="video/mp4" />
+        </video>
 
         {/* Overlay for text contrast */}
-        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       {/* Content – Lulu style */}
